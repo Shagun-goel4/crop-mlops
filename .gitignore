@@ -1,0 +1,16 @@
+# virtual environments
+venv/
+env/
+.env
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# os
+.DS_Store
+
+# tests
+.pytest_cache/
