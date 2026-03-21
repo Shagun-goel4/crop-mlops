@@ -23,9 +23,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: Generate mock data
-      run: python data/generate_data.py
-        
     - name: Train model
       run: python src/train.py
         
