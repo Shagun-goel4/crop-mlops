@@ -2,9 +2,9 @@ name: MLOps Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-and-test:
@@ -32,8 +32,8 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    # Only run deployment when pushing to main branch
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Only run deployment when pushing to master branch
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     
     steps:
     - name: Deploy to EC2 Instance
@@ -46,8 +46,8 @@ jobs:
           # Navigate to project folder
           cd ~/crop-mlops
           
-          # Pull the latest changes from main branch
-          git pull origin main
+          # Pull the latest changes from master branch
+          git pull origin master
           
           # Restart the Docker containers with the new updates
           sudo docker compose up -d --build
