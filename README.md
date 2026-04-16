@@ -8,7 +8,7 @@ Farmers often struggle to decide which crop to grow based on soil nutrients and 
 **Nitrogen, Phosphorus, Potassium, Temperature, Humidity, pH, and Rainfall.**
 
 ## ⚙️ Modern Tech Stack
-- **Machine Learning**: Scikit-learn (Random Forest)
+- **Machine Learning**: Scikit-learn (Logistic Regression, Decision Tree, Random Forest, SVM)
 - **Experiment Tracking**: MLflow
 - **Backend / Server**: FastAPI & Pydantic
 - **Frontend / UI**: Streamlit
@@ -20,7 +20,7 @@ Farmers often struggle to decide which crop to grow based on soil nutrients and 
 ## 🏗️ Architecture
 
 This project cleanly separates concerns into a decoupled microservices setup:
-1. **Model Pipeline**: `src/train.py` scales data, trains the Random Forest model, tracks parameters and scores via MLflow, and exports the model artifacts (`.pkl` files) into the `model/` directory.
+1. **Model Pipeline**: `src/train.py` scales data, evaluates multiple candidate models (Logistic Regression, Decision Tree, Random Forest, SVM), tracks parameters and scores via MLflow, and exports the highest-performing model artifact (`.pkl` file) into the `model/` directory.
 2. **Backend API**: A FastAPI service (`api/main.py`) validates requests via Pydantic and loads the `.pkl` models to serve predictions natively over a REST endpoint.
 3. **Frontend UI**: A Streamlit application (`app/app.py`) provides an interactive GUI to the user and communicates with the backend API over standard HTTP requests.
 
