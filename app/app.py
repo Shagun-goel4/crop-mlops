@@ -60,9 +60,15 @@ if st.button("Recommend Crop", type="primary", use_container_width=True):
         try:
             response = requests.post(API_URL, json=payload)
             response.raise_for_status()
-            prediction = response.json().get("recommended_crop")
-            if prediction:
-                st.success(f"🌱 Recommended Crop: **{prediction.capitalize()}**")
+            top_crops = response.json().get("top_crops")
+            if top_crops:
+                st.subheader("🌱 Top 3 Crop Recommendations")
+                for i, item in enumerate(top_crops):
+                    crop_name = item["crop"].capitalize()
+                    prob = item["probability"]
+                    
+                    st.write(f"**#{i+1}: {crop_name}** ({prob*100:.1f}%)")
+                    st.progress(prob)
             else:
                 st.error("Failed to make a prediction.")
         except requests.exceptions.RequestException as e:

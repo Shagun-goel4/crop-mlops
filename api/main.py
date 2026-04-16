@@ -49,8 +49,18 @@ def predict_crop(features: CropFeatures):
         features.ph, features.rainfall
     ]])
     
-    # Scale and predict
+    # Scale and extract probabilities
     scaled_data = scaler.transform(input_data)
-    prediction = model.predict(scaled_data)
+    probabilities = model.predict_proba(scaled_data)[0]
     
-    return {"recommended_crop": prediction[0]}
+    # Map probabilities to classes
+    classes = model.classes_
+    class_probs = list(zip(classes, probabilities))
+    
+    # Sort descending by probability and grab the top 3
+    class_probs.sort(key=lambda x: x[1], reverse=True)
+    top_3 = class_probs[:3]
+    
+    # Format array
+    result = [{"crop": crop, "probability": float(prob)} for crop, prob in top_3]
+    return {"top_crops": result}

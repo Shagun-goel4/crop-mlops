@@ -14,8 +14,10 @@ def test_model_prediction():
     
     input_data = np.array([[50, 50, 50, 25.0, 60.0, 6.5, 100.0]])
     scaled_data = scaler.transform(input_data)
-    prediction = model.predict(scaled_data)
+    # Test probabilistic mapping behavior
+    probabilities = model.predict_proba(scaled_data)[0]
+    classes = model.classes_
     
-    assert prediction is not None
-    assert isinstance(prediction[0], str)
-    assert len(prediction[0]) > 0
+    assert probabilities is not None
+    assert len(probabilities) > 0
+    assert len(classes) == len(probabilities)
