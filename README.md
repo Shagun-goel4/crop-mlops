@@ -1,17 +1,32 @@
-# AI-Based Crop Recommendation System with MLOps Pipeline
+# 🌾 AI-Based Crop Recommendation System with MLOps Pipeline
 
-A complete end-to-end Machine Learning Operations (MLOps) project demonstrating training, CI/CD, and deployment of a crop recommendation system.
+A complete end-to-end Machine Learning Operations (MLOps) project demonstrating training, experiment tracking, scalable API serving, continuous deployment (CI/CD), and a dynamic frontend UI.
 
-## 🌾 Project Overview
+## 📖 Project Overview
 
-Farmers often struggle to decide which crop to grow based on soil nutrients and environmental conditions. This system uses ML to suggest the most suitable crop from inputs: Nitrogen, Phosphorus, Potassium, Temperature, Humidity, pH, and Rainfall.
+Farmers often struggle to decide which crop to grow based on soil nutrients and environmental conditions. This system uses applied Machine Learning to suggest the most suitable crop based on the following inputs: 
+**Nitrogen, Phosphorus, Potassium, Temperature, Humidity, pH, and Rainfall.**
 
-## ⚙️ Tech Stack
-- **ML**: Scikit-learn (Random Forest)
-- **UI**: Streamlit
-- **MLOps**: Docker, GitHub Actions, Pytest
+## ⚙️ Modern Tech Stack
+- **Machine Learning**: Scikit-learn (Random Forest)
+- **Experiment Tracking**: MLflow
+- **Backend / Server**: FastAPI & Pydantic
+- **Frontend / UI**: Streamlit
+- **MLOps & Infrastructure**: Docker, Docker Compose, GitHub Actions (CI/CD), AWS EC2
+- **Testing**: Pytest
 
-## 🚀 Running Locally
+---
+
+## 🏗️ Architecture
+
+This project cleanly separates concerns into a decoupled microservices setup:
+1. **Model Pipeline**: `src/train.py` scales data, trains the Random Forest model, tracks parameters and scores via MLflow, and exports the model artifacts (`.pkl` files) into the `model/` directory.
+2. **Backend API**: A FastAPI service (`api/main.py`) validates requests via Pydantic and loads the `.pkl` models to serve predictions natively over a REST endpoint.
+3. **Frontend UI**: A Streamlit application (`app/app.py`) provides an interactive GUI to the user and communicates with the backend API over standard HTTP requests.
+
+---
+
+## 🚀 Running Locally (Without Docker)
 
 1. **Install dependencies**:
    ```bash
@@ -21,26 +36,44 @@ Farmers often struggle to decide which crop to grow based on soil nutrients and 
    ```
 
 2. **Generate / Download Data**:
-   ```bash
-   python data/generate_data.py
-   # Or replace data/Crop_recommendation.csv with Kaggle dataset:
-   # https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset
-   ```
+   Ensure you have a dataset in the `data/` folder, such as [Kaggle's Crop Recommendation Dataset](https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset). 
 
-3. **Train Model**:
+3. **Train Model & Track via MLflow**:
    ```bash
    python src/train.py
    ```
+   *Logs will be automatically captured in the locally generated `mlruns/` directory.*
 
-4. **Run Application**:
+4. **Start the FastAPI Backend**:
    ```bash
+   uvicorn api.main:app --reload --port 8000
+   ```
+
+5. **Start the Streamlit Application (In a new terminal window)**:
+   ```bash
+   export API_URL=http://localhost:8000/predict
    streamlit run app/app.py
    ```
 
-## 🐳 Docker
+---
 
-Build and run the containerized Streamlit app:
+## 🐳 Running with Docker
+
+You can easily orchestrate both the frontend and backend microservices natively using Docker Compose.
+
 ```bash
-docker build -t crop-mlops .
-docker run -p 8501:8501 crop-mlops
+docker compose up -d --build
 ```
+- **Streamlit Frontend** runs on port `8501`. (http://localhost:8501)
+- **FastAPI Backend** runs on port `8000`. (Read interactive API docs at http://localhost:8000/docs)
+
+---
+
+## ☁️ Continuous Deployment to AWS EC2
+
+This repository is equipped with a GitHub Actions workflow (`.github/workflows/main.yml`) that automates everything:
+1. **CI**: Pushing to `main` trains the model to check parameter integrations and runs Pytest validation.
+2. **CD**: Upon successful CI, GitHub Actions will securely SSH into your configured AWS EC2 Instance, pull the latest code, and robustly restart the `docker compose` clusters.
+
+> [!NOTE]
+> Review `ec2_specifications.md` for EC2 server sizing & security group requirements. Simply execute `bash scripts/deploy_ec2.sh` on your server for automated prerequisite installations!
