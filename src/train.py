@@ -47,8 +47,12 @@ def train_model():
         print(f"--> Training {model_name}...")
         
         with mlflow.start_run(run_name=model_name):
-            model.fit(X_train_scaled, y_train)
-            y_pred = model.predict(X_test_scaled)
+            if model_name in ["Logistic Regression", "SVM"]:
+                model.fit(X_train_scaled, y_train)
+                y_pred = model.predict(X_test_scaled)
+            else:
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
             acc = accuracy_score(y_test, y_pred)
             
             model_accuracies[model_name] = acc
