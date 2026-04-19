@@ -13,9 +13,14 @@ def test_model_prediction():
     scaler = joblib.load(scaler_path)
     
     input_data = np.array([[50, 50, 50, 25.0, 60.0, 6.5, 100.0]])
-    scaled_data = scaler.transform(input_data)
+    model_name = type(model).__name__
+    if model_name in ['RandomForestClassifier', 'DecisionTreeClassifier']:
+        final_data = input_data
+    else:
+        final_data = scaler.transform(input_data)
+        
     # Test probabilistic mapping behavior
-    probabilities = model.predict_proba(scaled_data)[0]
+    probabilities = model.predict_proba(final_data)[0]
     classes = model.classes_
     
     assert probabilities is not None

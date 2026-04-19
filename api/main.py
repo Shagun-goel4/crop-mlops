@@ -49,9 +49,14 @@ def predict_crop(features: CropFeatures):
         features.ph, features.rainfall
     ]])
     
-    # Scale and extract probabilities
-    scaled_data = scaler.transform(input_data)
-    probabilities = model.predict_proba(scaled_data)[0]
+    # Conditionally scale based on model type
+    model_name = type(model).__name__
+    if model_name in ['RandomForestClassifier', 'DecisionTreeClassifier']:
+        final_data = input_data
+    else:
+        final_data = scaler.transform(input_data)
+        
+    probabilities = model.predict_proba(final_data)[0]
     
     # Map probabilities to classes
     classes = model.classes_
